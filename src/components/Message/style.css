@@ -1,0 +1,48 @@
+.Message {
+  border-radius: 20px;
+  padding: 8px 15px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.Message-Left {
+  align-items: flex-start;
+  margin-right: auto;
+  background-color: white;
+  position: relative;
+}
+
+.Message-Left.Message-Last::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -7px;
+  bottom: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid white;
+  z-index: 1;
+}
+
+.Message-Right {
+  align-items: flex-end;
+  color: white;
+  margin-left: auto;
+  background: #0085D1;
+  position: relative;
+}
+
+.Message-Right.Message-Last:before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  right: -8px;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid #0085D1;
+  z-index: 1;
+}
