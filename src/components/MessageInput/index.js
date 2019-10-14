@@ -4,18 +4,18 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import './style.css';
 
 export default function MessageInput(props) {
-  // const addMessage = props.onSubmit;
-  const [text, setText] = React.useState('');
+  const text = props.text;
 
-  function handleInputText(event) {
-    console.log(event.target.value);
-    setText(event.target.value);
+  // ------------ handlers ------------ //
+  const handleChange = event => {
+    props.onChange(event.target.value);
   }
-
-  function handleSubmit(event) {
+  const handleSubmit = event => {
     event.preventDefault();
+    props.onSubmit();
   }
 
+  // ------------ renderer ------------ //
   return (
     <div className="MessageInput">
       <form onSubmit={handleSubmit} className="MessageInput-Form">
@@ -24,7 +24,7 @@ export default function MessageInput(props) {
           className="MessageInput-Form-Text"
           placeholder="메시지를 입력하세요"
           value={text}
-          onChange={handleInputText}
+          onChange={handleChange}
           autoFocus
         />
         <button

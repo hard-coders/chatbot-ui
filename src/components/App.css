@@ -1,11 +1,11 @@
 body {
   height: 100%;
+  background-color: whitesmoke;
 }
 
 .App {
   display: flex;
   flex-direction: column;
-  background-color: whitesmoke;
 }
 
 .App-Header {
