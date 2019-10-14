@@ -15,6 +15,12 @@ function Header() {
   );
 }
 
+/**
+ * 회원의 기존 메시지 불러오기 제외
+ * `user_id`가 0이면 봇, 1이면 게스트로 판정
+ *
+ * 추후 변경바람
+ */
 function App() {
   const dummies = [
     {
@@ -37,12 +43,17 @@ function App() {
   });
   // 채팅 입력 후 메시지 추가
 
-  // ------------ handlers ------------ //
+  /**
+   * 사용자가 메시지 창에 입력을 하는동안 text 값 설정
+   * @param {string} value 텍스트 메시지
+   */
   const handleInputTextChange = value => {
     setText(value);
-    console.log('App module:', value);
   }
 
+  /**
+   * form의 submit 처리
+   */
   const handleSendMessage = () => {
     setText('');
     setMessages([...messages, {
