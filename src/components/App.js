@@ -55,6 +55,11 @@ function App() {
    * form의 submit 처리
    */
   const handleSendMessage = () => {
+    // 공백만 있을 경우 아무 행동도 하지 않음
+    if (!text.replace(/\s/g, '').length) {
+      return;
+    }
+
     setText('');
     setMessages([...messages, {
       user_id: 1,
