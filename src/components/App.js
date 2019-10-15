@@ -6,99 +6,100 @@ import MessageInput from './MessageInput';
 import './App.css';
 
 axios.defaults.baseURL = 'https://tbot.ttb.co.kr';
+const dummies = [
+  {
+    user_id: 0,
+    text: 'Greetings 😀'
+  },
+  {
+    user_id: 1,
+    text: 'Hi, there'
+  },
+]
 
 /**
  * 회원의 기존 메시지 불러오기 제외
  * `user_id`가 0이면 봇, 1이면 게스트로 판정
  *
  * 추후 변경바람
+ *
+ * 2019.10.15 hy.lee hook으로 만들었다가 useState 버그로 인해 롤백..
+ * 버그라기보다는 ajax fetch 하거나 다시 렌더링 할때 다른 기법을 써야함..너무 어려움..
  */
-function App() {
-  const dummies = [
-    {
-      user_id: 0,
-      text: 'Greetings 😀'
-    },
-    {
-      user_id: 1,
-      text: 'Hi, there'
-    },
-  ]
-
-  const [text, setText] = React.useState('');
-  const [messages, setMessages] = React.useState(dummies);
-  const [session, setSession] = React.useState(null);
+class App extends React.Component {
+  state = {
+    text: '',
+    messages: dummies,
+    session: '',
+  }
 
   /**
    * Same function as componetDidMound() at class component
    */
-  React.useEffect(() => {
+  componentDidMount() {
     // 서버 핑 확인
     // TODO: 옛날 tbot 쓰는데 그거 버릴거 그러니까 아래도 바꿔야함
     axios.get('/api/message')
     .then(response => {
       console.log(response.data);
-      setSession(response.data.session);
+      this.setState({session: response.data.session});
     })
     .catch(error => {
       console.log(error);
     });
+  }
 
-    // return 을 주어서 unmount 때 세션을 삭제해야 하나?
-  }, []);
-
-  /**
-   * MessageInput 컴포넌트 <input>
-   * 사용자가 메시지 창에 입력을 할 때마다 text 값 설정
-   * @param {string} value 텍스트 메시지
-   */
-  const handleInputTextChange = value => {
-    setText(value);
+  handleInputTextChange = value => {
+    // setText(value);
+    this.setState({text: value});
   }
 
   /**
    * MessageInput 컴포넌트 <form>
    * submit 처리
    */
-  const handleSendMessage = () => {
+  handleSendMessage = () => {
     // 공백만 있을 경우 아무 행동도 하지 않음
-    if (!text.replace(/\s/g, '').length) {
+    if (!this.state.text.replace(/\s/g, '').length) {
       return;
     }
 
-    // clear input text
-    setText('');
-    setMessages([...messages, {
-      user_id: 1,
-      text,
-    }]);
+    this.setState({
+      text: '',
+      messages: [...this.state.messages, {
+        user_id: 1,
+        text: this.state.text,
+      }],
+    });
 
-    // 현재 버그가 있음
-    // setMessages가 마지막 한 번만 동작함;;
-    axios.post('/api/message', { text, session })
+    // send message
+    axios.post('/api/message', { text: this.state.text, session: this.state.session })
     .then(response => {
-      setMessages([...messages, {
-        user_id: 0,
-        text: response.data.message,
-      }]);
+      this.setState({
+        messages: [...this.state.messages, {
+          user_id: 0,
+          text: response.data.message,
+        }]
+      });
     })
     .catch(error => {
       console.log(error);
     });
   }
 
-  // ------------ renderer ------------ //
-  return (
-    <div className="App">
-      <Header image="" />
-      <MessageList messages={messages} />
-      <MessageInput
-        onChange={handleInputTextChange}
-        onSubmit={handleSendMessage}
-        text={text}
-      />
-    </div>
-  );
+  render() {
+    return (
+      <div className="App">
+        <Header image="" />
+        <MessageList messages={this.state.messages} />
+        <MessageInput
+          onChange={this.handleInputTextChange}
+          onSubmit={this.handleSendMessage}
+          text={this.state.text}
+        />
+      </div>
+    );
+  }
 }
 
 export default App;
