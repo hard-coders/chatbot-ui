@@ -1,19 +1,11 @@
 import React from 'react';
+import axios from 'axios';
+import Header from './Header';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import './App.css';
 
-function Header() {
-  return (
-    <div className="App-Header">
-      <img
-        src="https://www.ttb.co.kr/resource/images/ttb.png"
-        className="App-Header-Logo"
-        alt="logo"
-      />
-    </div>
-  );
-}
+axios.defaults.baseURL = 'https://tbot.ttb.co.kr';
 
 /**
  * 회원의 기존 메시지 불러오기 제외
@@ -35,16 +27,29 @@ function App() {
 
   const [text, setText] = React.useState('');
   const [messages, setMessages] = React.useState(dummies);
-
-  React.useEffect(() => {
-    // 서버 핑 확인
-    // 스크롤 다운
-    // 서버에서 받은 메시지 추가
-  });
-  // 채팅 입력 후 메시지 추가
+  const [session, setSession] = React.useState(null);
 
   /**
-   * 사용자가 메시지 창에 입력을 하는동안 text 값 설정
+   * Same function as componetDidMound() at class component
+   */
+  React.useEffect(() => {
+    // 서버 핑 확인
+    // TODO: 옛날 tbot 쓰는데 그거 버릴거 그러니까 아래도 바꿔야함
+    axios.get('/api/message')
+    .then(response => {
+      console.log(response.data);
+      setSession(response.data.session);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+
+    // return 을 주어서 unmount 때 세션을 삭제해야 하나?
+  }, []);
+
+  /**
+   * MessageInput 컴포넌트 <input>
+   * 사용자가 메시지 창에 입력을 할 때마다 text 값 설정
    * @param {string} value 텍스트 메시지
    */
   const handleInputTextChange = value => {
@@ -52,7 +57,8 @@ function App() {
   }
 
   /**
-   * form의 submit 처리
+   * MessageInput 컴포넌트 <form>
+   * submit 처리
    */
   const handleSendMessage = () => {
     // 공백만 있을 경우 아무 행동도 하지 않음
@@ -60,17 +66,31 @@ function App() {
       return;
     }
 
+    // clear input text
     setText('');
     setMessages([...messages, {
       user_id: 1,
       text,
     }]);
+
+    // 현재 버그가 있음
+    // setMessages가 마지막 한 번만 동작함;;
+    axios.post('/api/message', { text, session })
+    .then(response => {
+      setMessages([...messages, {
+        user_id: 0,
+        text: response.data.message,
+      }]);
+    })
+    .catch(error => {
+      console.log(error);
+    });
   }
 
   // ------------ renderer ------------ //
   return (
     <div className="App">
-      <Header />
+      <Header image="" />
       <MessageList messages={messages} />
       <MessageInput
         onChange={handleInputTextChange}

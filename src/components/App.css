@@ -7,23 +7,3 @@ body {
   display: flex;
   flex-direction: column;
 }
-
-.App-Header {
-  display: flex;
-  position: sticky;
-  top: 0;
-  background-color: #282c34;
-  height: 100px;
-  justify-content: flex-start;
-  align-items: center;
-  color: white;
-  flex-wrap: wrap;
-  z-index: 2;
-}
-
-.App-Header-Logo {
-  display: block;
-  height: 50px;
-  margin-left: 15px;
-  margin-right: 15px;
-}
