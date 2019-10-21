@@ -2,6 +2,8 @@
 
 ![preview](preview.png)
 
+사내 챗봇 클라이언트를 위한 개인 프로젝트
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
